@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'dart:ui';  // ImageFilter를 사용하기 위한 import
+import 'dart:ui'; // ImageFilter를 사용하기 위한 import
 import 'package:flutter/rendering.dart';
 
 void main() {
@@ -45,7 +45,7 @@ class _MyHomePageState extends State<MyHomePage> {
               height: 400,
               decoration: BoxDecoration(
                 color: Colors.black.withOpacity(0.75),
-                borderRadius: BorderRadius.circular(10),
+                borderRadius: BorderRadius.circular(20),
                 border: Border.all(
                   color: const Color(0xFFFFC83C),
                   width: 10,
@@ -59,20 +59,33 @@ class _MyHomePageState extends State<MyHomePage> {
                   ),
                 ],
               ),
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001),
-              child: Column(
-                children: [
-                  const SizedBox(height: 20),
-                  // Pokemon Name placeholder
-                  Container(
-                    height: 30,
-                  ),
-                  // Pokemon XP placeholder
-                  Container(
-                    height: 20,
-                  ),
-                ],
+              clipBehavior: Clip.antiAlias,
+              child: const Padding(
+                padding: EdgeInsets.only(left: 16.0),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(height: 10),
+                    // Pokemon Name
+                    Text(
+                      'Pikachu',
+                      style: TextStyle(
+                        fontFamily: 'Silkscreen',
+                        fontSize: 24,
+                        color: Colors.white,
+                      ),
+                    ),
+
+                    Text(
+                      '66HP',
+                      style: TextStyle(
+                        fontFamily: 'Silkscreen',
+                        fontSize: 16,
+                        color: Color(0xFFFFC83C),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
@@ -83,7 +96,8 @@ class _MyHomePageState extends State<MyHomePage> {
             left: MediaQuery.of(context).size.width * 0.4, // 50%
             child: Transform(
               transform: Matrix4.identity()
-                ..translate(-125.0, 0, 100.0), // translateX(-50%) and translateZ(100px)
+                ..translate(
+                    -125.0, 0, 100.0), // translateX(-50%) and translateZ(100px)
               child: SizedBox(
                 width: 300,
                 height: 300,
