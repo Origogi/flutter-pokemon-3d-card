@@ -77,7 +77,7 @@ class _MyHomePageState extends State<MyHomePage> {
                     ),
 
                     Text(
-                      '66HP',
+                      '65HP',
                       style: TextStyle(
                         fontFamily: 'Silkscreen',
                         fontSize: 16,
