@@ -37,10 +37,70 @@ class _MyHomePageState extends State<MyHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: TiltCard(),
+      backgroundColor: Colors.black,
+      body: Stack(
+        fit: StackFit.expand,
+        children: [
+          // 배경 이미지
+          Container(
+            width: 800,
+            height: 800,
+            child: ColorFiltered(
+              // saturation과 contrast 모두 증가
+              colorFilter: ColorFilter.matrix([
+                2.5, -0.5, -0.5, 0, 0,    // Red
+                -0.5, 2.5, -0.5, 0, 0,    // Green
+                -0.5, -0.5, 2.5, 0, 0,    // Blue
+                0, 0, 0, 1.2, 0,          // Alpha
+              ]),
+              child: ShaderMask(
+                shaderCallback: (Rect bounds) {
+                  return LinearGradient(
+                    colors: [
+                      Colors.black.withOpacity(0.2),
+                      Colors.black.withOpacity(0.1),
+                    ],
+                  ).createShader(bounds);
+                },
+                blendMode: BlendMode.multiply,
+                child: Image.network(
+                  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png',
+                  fit: BoxFit.cover,
+                ),
+              ),
+            ),
+          ),
+          // 블러 효과와 채도 강화
+          BackdropFilter(
+            filter: ImageFilter.blur(
+              sigmaX: 150,
+              sigmaY: 150,
+            ),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.transparent,
+                gradient: LinearGradient(
+                  colors: [
+                    Colors.transparent,
+                    Colors.black.withOpacity(0.15),
+                  ],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
+          ),
+          // 메인 카드
+          Center(
+            child: TiltCard(),
+          ),
+        ],
+      ),
     );
   }
 }
+
+
 
 
 class TiltCard extends StatefulWidget {
@@ -57,7 +117,7 @@ class _TiltCardState extends State<TiltCard>
   late Animation<double> _animationY;
 
   // glare 효과를 위한 getter 추가
-  double get _glareOpacity => 
+  double get _glareOpacity =>
       ((_tiltX.abs() + _tiltY.abs()) / 20) * 0.35; // maxGlare: 0.35
 
   @override
@@ -208,7 +268,7 @@ class _TiltCardState extends State<TiltCard>
                         width: 350,
                         height: 350,
                         child: Image.network(
-                          'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/151.png',
+                          'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png',
                           fit: BoxFit.contain,
                         ),
                       ),
