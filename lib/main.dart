@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'dart:ui'; // ImageFilter를 사용하기 위한 import
-import 'package:flutter/rendering.dart';
 import 'dart:math';
 
 void main() {
@@ -42,12 +41,12 @@ class _MyHomePageState extends State<MyHomePage> {
         fit: StackFit.expand,
         children: [
           // 배경 이미지
-          Container(
+          SizedBox(
             width: 800,
             height: 800,
             child: ColorFiltered(
               // saturation과 contrast 모두 증가
-              colorFilter: ColorFilter.matrix([
+              colorFilter: const ColorFilter.matrix([
                 2.5, -0.5, -0.5, 0, 0,    // Red
                 -0.5, 2.5, -0.5, 0, 0,    // Green
                 -0.5, -0.5, 2.5, 0, 0,    // Blue
@@ -91,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
             ),
           ),
           // 메인 카드
-          Center(
+          const Center(
             child: TiltCard(),
           ),
         ],
@@ -104,17 +103,17 @@ class _MyHomePageState extends State<MyHomePage> {
 
 
 class TiltCard extends StatefulWidget {
+  const TiltCard({super.key});
+
   @override
-  _TiltCardState createState() => _TiltCardState();
+  TiltCardState createState() => TiltCardState();
 }
 
-class _TiltCardState extends State<TiltCard>
+class TiltCardState extends State<TiltCard>
     with SingleTickerProviderStateMixin {
   double _tiltX = 0.0;
   double _tiltY = 0.0;
   late AnimationController _controller;
-  late Animation<double> _animationX;
-  late Animation<double> _animationY;
 
   // glare 효과를 위한 getter 추가
   double get _glareOpacity =>
@@ -127,11 +126,9 @@ class _TiltCardState extends State<TiltCard>
       vsync: this,
       duration: const Duration(milliseconds: 100),
     )..drive(CurveTween(
-        curve: Cubic(0.03, 0.35, 0.63, 1.23), // 원본 CSS의 easing curve
+        curve: const Cubic(0.03, 0.35, 0.63, 1.23), // 원본 CSS의 easing curve
       ));
 
-    _animationX = Tween<double>(begin: 0.0, end: 0.0).animate(_controller);
-    _animationY = Tween<double>(begin: 0.0, end: 0.0).animate(_controller);
   }
 
   void _onPointerMove(Offset position) {
@@ -264,7 +261,7 @@ class _TiltCardState extends State<TiltCard>
                         ..setEntry(3, 2, 0.001)
                         ..translate(-180.0, 0.0, 50.0),
                       alignment: FractionalOffset.center,
-                      child: Container(
+                      child: SizedBox(
                         width: 350,
                         height: 350,
                         child: Image.network(
