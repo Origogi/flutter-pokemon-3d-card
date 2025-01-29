@@ -146,9 +146,9 @@ class TiltCardState extends State<TiltCard>
               ],
             ),
             clipBehavior: Clip.antiAlias,
-            child: const Stack(
+            child: Stack(
               children: [
-                Padding(
+                const Padding(
                   padding: EdgeInsets.only(left: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -174,6 +174,30 @@ class TiltCardState extends State<TiltCard>
                     ],
                   ),
                 ),
+                // Glare 효과
+                Positioned.fill(
+                  child: Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(10),
+                      gradient: LinearGradient(
+                        begin: Alignment(
+                          -0.5 - _tiltY / 8,  // tilt에 따라 시작점 이동
+                          -0.5 + _tiltX / 8,
+                        ),
+                        end: Alignment(
+                          0.5 - _tiltY / 8,   // tilt에 따라 끝점 이동
+                          0.5 + _tiltX / 8,
+                        ),
+                        colors: [
+                          Colors.white.withOpacity(_glareOpacity),
+                          Colors.transparent,
+                          Colors.transparent,
+                        ],
+                        stops: const [0.0, 0.5, 1.0],
+                      ),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -184,10 +208,10 @@ class TiltCardState extends State<TiltCard>
             right: 0,
             child: Transform(
               transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001) // 3D 효과를 위한 Z축 설정
-                ..rotateX(_tiltX * (pi / 180)) // 카드와 동일한 틸트 적용
-                ..rotateY(_tiltY * (pi / 180)) // 카드와 동일한 틸트 적용
-                ..translate(0.0, 0.0, -100.0), // Z축 이동
+                ..setEntry(3, 2, 0.001)
+                ..rotateX(_tiltX * (pi / 180))
+                ..rotateY(_tiltY * (pi / 180))
+                ..translate(0.0, 0.0, -100.0),
               alignment: FractionalOffset.center,
               child: SizedBox(
                 width: 350,
@@ -199,10 +223,35 @@ class TiltCardState extends State<TiltCard>
               ),
             ),
           ),
+          // 추가 하이라이트 효과
+          Positioned.fill(
+            child: Container(
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(20),
+                gradient: LinearGradient(
+                  begin: Alignment(
+                    _tiltY / 2,
+                    _tiltX / 2,
+                  ),
+                  end: Alignment(
+                    -_tiltY / 2,
+                    -_tiltX / 2,
+                  ),
+                  colors: [
+                    Colors.transparent,
+                    Colors.white.withOpacity(_glareOpacity * 0.2),
+                    Colors.transparent,
+                  ],
+                  stops: const [0.0, 0.5, 1.0],
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
   }
+
 
   @override
   void dispose() {
