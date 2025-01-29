@@ -65,7 +65,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 },
                 blendMode: BlendMode.multiply,
                 child: Image.network(
-                  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png',
+                  'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png',
                   fit: BoxFit.cover,
                 ),
               ),
@@ -102,7 +102,6 @@ class _MyHomePageState extends State<MyHomePage> {
 }
 
 
-
 class TiltCard extends StatefulWidget {
   const TiltCard({super.key});
 
@@ -116,9 +115,8 @@ class TiltCardState extends State<TiltCard>
   double _tiltY = 0.0;
   late AnimationController _controller;
 
-  // glare 효과를 위한 getter 추가
   double get _glareOpacity =>
-      ((_tiltX.abs() + _tiltY.abs()) / 20) * 0.35; // maxGlare: 0.35
+      ((_tiltX.abs() + _tiltY.abs()) / 20) * 0.35;
 
   @override
   void initState() {
@@ -127,43 +125,33 @@ class TiltCardState extends State<TiltCard>
       vsync: this,
       duration: const Duration(milliseconds: 300),
     )..drive(CurveTween(
-        curve: const Cubic(0.03, 0.35, 0.63, 1.23), // 원본 CSS의 easing curve
+        curve: const Cubic(0.03, 0.35, 0.63, 1.23),
       ));
   }
 
-  // 웹에서 마우스 이동 처리
   void _onMouseMove(PointerHoverEvent event, BuildContext context) {
     final renderBox = context.findRenderObject() as RenderBox;
     final localPosition = renderBox.globalToLocal(event.position);
 
     setState(() {
-      // 카드 중심점을 기준으로 틸트 계산 (반대 방향으로 설정)
       final centerX = renderBox.size.width / 2;
       final centerY = renderBox.size.height / 2;
-      _tiltX = -(localPosition.dy - centerY) / 20; // 반대 방향
-      _tiltY = -(localPosition.dx - centerX) / 20; // 반대 방향
-
-      // maxTilt: 8로 제한
+      _tiltX = -(localPosition.dy - centerY) / 20;
+      _tiltY = -(localPosition.dx - centerX) / 20;
       _tiltX = _tiltX.clamp(-8.0, 8.0);
       _tiltY = _tiltY.clamp(-8.0, 8.0);
     });
   }
 
-  // 모바일에서 터치 이동 처리
   void _onPointerMove(Offset position) {
     setState(() {
-      // 터치 기준 틸트 계산 (반대 방향으로 설정)
-      _tiltX = -(position.dy - 200) / 20; // 반대 방향
-      _tiltY = -(position.dx - 125) / 20; // 반대 방향
-
-      // maxTilt: 8로 제한
+      _tiltX = -(position.dy - 200) / 20;
+      _tiltY = -(position.dx - 125) / 20;
       _tiltX = _tiltX.clamp(-8.0, 8.0);
       _tiltY = _tiltY.clamp(-8.0, 8.0);
     });
   }
 
-
-  // 틸트 초기화
   void _resetTilt() {
     _controller.forward(from: 0.0).then((_) {
       setState(() {
@@ -181,7 +169,7 @@ class TiltCardState extends State<TiltCard>
           ? MouseRegion(
               onHover: (event) => _onMouseMove(event, context),
               onExit: (_) => _resetTilt(),
-              child: _buildTiltCard(),
+              child: _buildTiltCard(context),
             )
           : GestureDetector(
               onPanStart: (details) {
@@ -193,13 +181,12 @@ class TiltCardState extends State<TiltCard>
               onPanEnd: (_) {
                 _resetTilt();
               },
-              child: _buildTiltCard(),
+              child: _buildTiltCard(context),
             ),
     );
   }
 
-  // TiltCard UI를 빌드하는 메서드
-  Widget _buildTiltCard() {
+  Widget _buildTiltCard(BuildContext context) {
     return AnimatedBuilder(
       animation: _controller,
       builder: (context, child) {
@@ -212,6 +199,7 @@ class TiltCardState extends State<TiltCard>
           child: Stack(
             clipBehavior: Clip.none,
             children: [
+              // 카드 배경
               Container(
                 width: 250,
                 height: 400,
@@ -232,9 +220,9 @@ class TiltCardState extends State<TiltCard>
                   ],
                 ),
                 clipBehavior: Clip.antiAlias,
-                child: Stack(
+                child: const Stack(
                   children: [
-                    const Padding(
+                    Padding(
                       padding: EdgeInsets.only(left: 16.0),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -260,48 +248,26 @@ class TiltCardState extends State<TiltCard>
                         ],
                       ),
                     ),
-                    // Glare 효과 레이어
-                    AnimatedOpacity(
-                      duration: const Duration(milliseconds: 100),
-                      opacity: _glareOpacity,
-                      child: Container(
-                        width: 250,
-                        height: 400,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(20),
-                          gradient: LinearGradient(
-                            begin: Alignment(
-                              -_tiltY / 8,
-                              -_tiltX / 8,
-                            ),
-                            end: Alignment(
-                              _tiltY / 8,
-                              _tiltX / 8,
-                            ),
-                            colors: [
-                              Colors.white.withOpacity(0.0),
-                              Colors.white.withOpacity(0.5),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
                   ],
                 ),
               ),
+              // 카드 내부 이미지 (카드와 함께 틸트됨)
               Positioned(
-                bottom: -30,
-                left: 125,
+                bottom: -20,
+                left: 0,
+                right: 0,
                 child: Transform(
                   transform: Matrix4.identity()
-                    ..setEntry(3, 2, 0.001)
-                    ..translate(-180.0, 0.0, 100.0),
+                    ..setEntry(3, 2, 0.001) // 3D 효과를 위한 Z축 설정
+                    ..rotateX(_tiltX * (pi / 180)) // 카드와 동일한 틸트 적용
+                    ..rotateY(_tiltY * (pi / 180)) // 카드와 동일한 틸트 적용
+                    ..translate(0.0, 0.0, -100.0), // Z축 이동
                   alignment: FractionalOffset.center,
                   child: SizedBox(
                     width: 350,
                     height: 350,
                     child: Image.network(
-                      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png',
+                      'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/25.png',
                       fit: BoxFit.contain,
                     ),
                   ),
