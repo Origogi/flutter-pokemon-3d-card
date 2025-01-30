@@ -4,28 +4,22 @@ import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'dart:math' show pi;
 
+// 메인 TiltCard 위젯
 class TiltCard extends HookWidget {
   const TiltCard({super.key});
 
   @override
   Widget build(BuildContext context) {
-    // tilt 상태 관리
     final tiltX = useState(0.0);
     final tiltY = useState(0.0);
-
-    // 애니메이션 컨트롤러
     final animationController = useAnimationController(
       duration: const Duration(milliseconds: 300),
     );
 
-    // tilt 애니메이션
     final tiltXAnimation = useAnimation(
       TweenSequence([
         TweenSequenceItem(
-          tween: Tween<double>(
-            begin: tiltX.value,
-            end: 0.0,
-          ),
+          tween: Tween<double>(begin: tiltX.value, end: 0.0),
           weight: 1.0,
         ),
       ]).animate(animationController),
@@ -34,22 +28,17 @@ class TiltCard extends HookWidget {
     final tiltYAnimation = useAnimation(
       TweenSequence([
         TweenSequenceItem(
-          tween: Tween<double>(
-            begin: tiltY.value,
-            end: 0.0,
-          ),
+          tween: Tween<double>(begin: tiltY.value, end: 0.0),
           weight: 1.0,
         ),
       ]).animate(animationController),
     );
 
-    // glare 효과를 위한 opacity 계산
     final glareOpacity = useMemoized(
       () => ((tiltX.value.abs() + tiltY.value.abs()) / 20) * 0.35,
       [tiltX.value, tiltY.value],
     );
 
-    // 마우스 이벤트 핸들러
     final onMouseMove = useCallback((PointerHoverEvent event, BuildContext context) {
       final renderBox = context.findRenderObject() as RenderBox;
       final localPosition = renderBox.globalToLocal(event.position);
@@ -60,13 +49,11 @@ class TiltCard extends HookWidget {
       tiltY.value = (-(localPosition.dx - centerX) / 20).clamp(-8.0, 8.0);
     }, []);
 
-    // 터치 이벤트 핸들러
     final onPointerMove = useCallback((Offset position) {
       tiltX.value = (-(position.dy - 200) / 20).clamp(-8.0, 8.0);
       tiltY.value = (-(position.dx - 125) / 20).clamp(-8.0, 8.0);
     }, []);
 
-    // 리셋 핸들러
     final resetTilt = useCallback(() {
       animationController.forward(from: 0.0).then((_) {
         tiltX.value = 0.0;
@@ -74,7 +61,6 @@ class TiltCard extends HookWidget {
       });
     }, [animationController]);
 
-    // 컨트롤러 dispose
     useEffect(() => animationController.dispose, []);
 
     return Center(
@@ -82,7 +68,7 @@ class TiltCard extends HookWidget {
           ? MouseRegion(
               onHover: (event) => onMouseMove(event, context),
               onExit: (_) => resetTilt(),
-              child: _buildTiltCard(
+              child: TiltCardContent(
                 tiltX: animationController.isAnimating ? tiltXAnimation : tiltX.value,
                 tiltY: animationController.isAnimating ? tiltYAnimation : tiltY.value,
                 glareOpacity: glareOpacity,
@@ -92,7 +78,7 @@ class TiltCard extends HookWidget {
               onPanStart: (details) => onPointerMove(details.localPosition),
               onPanUpdate: (details) => onPointerMove(details.localPosition),
               onPanEnd: (_) => resetTilt(),
-              child: _buildTiltCard(
+              child: TiltCardContent(
                 tiltX: animationController.isAnimating ? tiltXAnimation : tiltX.value,
                 tiltY: animationController.isAnimating ? tiltYAnimation : tiltY.value,
                 glareOpacity: glareOpacity,
@@ -100,12 +86,23 @@ class TiltCard extends HookWidget {
             ),
     );
   }
+}
 
-  Widget _buildTiltCard({
-    required double tiltX,
-    required double tiltY,
-    required double glareOpacity,
-  }) {
+// 틸트 카드 컨텐츠 위젯
+class TiltCardContent extends StatelessWidget {
+  final double tiltX;
+  final double tiltY;
+  final double glareOpacity;
+
+  const TiltCardContent({
+    super.key,
+    required this.tiltX,
+    required this.tiltY,
+    required this.glareOpacity,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Transform(
       transform: Matrix4.identity()
         ..setEntry(3, 2, 0.001)
@@ -115,19 +112,30 @@ class TiltCard extends HookWidget {
       child: Stack(
         clipBehavior: Clip.none,
         children: [
-          _buildCardBackground(tiltX: tiltX, tiltY: tiltY, glareOpacity: glareOpacity),
-          _buildCardImage(tiltX: tiltX, tiltY: tiltY),
-          _buildHighlightEffect(tiltX: tiltX, tiltY: tiltY, glareOpacity: glareOpacity),
+          CardBackground(tiltX: tiltX, tiltY: tiltY, glareOpacity: glareOpacity),
+          CardImage(tiltX: tiltX, tiltY: tiltY),
+          HighlightEffect(tiltX: tiltX, tiltY: tiltY, glareOpacity: glareOpacity),
         ],
       ),
     );
   }
+}
 
-  Widget _buildCardBackground({
-    required double tiltX,
-    required double tiltY,
-    required double glareOpacity,
-  }) {
+// 카드 배경 위젯
+class CardBackground extends StatelessWidget {
+  final double tiltX;
+  final double tiltY;
+  final double glareOpacity;
+
+  const CardBackground({
+    super.key,
+    required this.tiltX,
+    required this.tiltY,
+    required this.glareOpacity,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Container(
       width: 250,
       height: 400,
@@ -151,30 +159,35 @@ class TiltCard extends HookWidget {
       child: Stack(
         children: [
           const _CardContent(),
-          _buildGlareEffect(tiltX: tiltX, tiltY: tiltY, glareOpacity: glareOpacity),
+          GlareEffect(tiltX: tiltX, tiltY: tiltY, glareOpacity: glareOpacity),
         ],
       ),
     );
   }
+}
 
-  Widget _buildGlareEffect({
-    required double tiltX,
-    required double tiltY,
-    required double glareOpacity,
-  }) {
+// Glare 효과 위젯
+class GlareEffect extends StatelessWidget {
+  final double tiltX;
+  final double tiltY;
+  final double glareOpacity;
+
+  const GlareEffect({
+    super.key,
+    required this.tiltX,
+    required this.tiltY,
+    required this.glareOpacity,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Positioned.fill(
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(10),
           gradient: LinearGradient(
-            begin: Alignment(
-              -0.5 - tiltY / 8,
-              -0.5 + tiltX / 8,
-            ),
-            end: Alignment(
-              0.5 - tiltY / 8,
-              0.5 + tiltX / 8,
-            ),
+            begin: Alignment(-0.5 - tiltY / 8, -0.5 + tiltX / 8),
+            end: Alignment(0.5 - tiltY / 8, 0.5 + tiltX / 8),
             colors: [
               Colors.white.withOpacity(glareOpacity),
               Colors.transparent,
@@ -186,11 +199,21 @@ class TiltCard extends HookWidget {
       ),
     );
   }
+}
 
-  Widget _buildCardImage({
-    required double tiltX,
-    required double tiltY,
-  }) {
+// 카드 이미지 위젯
+class CardImage extends StatelessWidget {
+  final double tiltX;
+  final double tiltY;
+
+  const CardImage({
+    super.key,
+    required this.tiltX,
+    required this.tiltY,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Positioned(
       bottom: -20,
       left: 0,
@@ -215,25 +238,30 @@ class TiltCard extends HookWidget {
       ),
     );
   }
+}
 
-  Widget _buildHighlightEffect({
-    required double tiltX,
-    required double tiltY,
-    required double glareOpacity,
-  }) {
+// 하이라이트 효과 위젯
+class HighlightEffect extends StatelessWidget {
+  final double tiltX;
+  final double tiltY;
+  final double glareOpacity;
+
+  const HighlightEffect({
+    super.key,
+    required this.tiltX,
+    required this.tiltY,
+    required this.glareOpacity,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return Positioned.fill(
       child: Container(
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(20),
           gradient: LinearGradient(
-            begin: Alignment(
-              tiltY / 2,
-              tiltX / 2,
-            ),
-            end: Alignment(
-              -tiltY / 2,
-              -tiltX / 2,
-            ),
+            begin: Alignment(tiltY / 2, tiltX / 2),
+            end: Alignment(-tiltY / 2, -tiltX / 2),
             colors: [
               Colors.transparent,
               Colors.white.withOpacity(glareOpacity * 0.2),
@@ -246,6 +274,7 @@ class TiltCard extends HookWidget {
     );
   }
 }
+
 
 class _CardContent extends StatelessWidget {
   const _CardContent();
