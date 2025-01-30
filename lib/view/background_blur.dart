@@ -32,8 +32,8 @@ class BackgroudBlur extends ConsumerWidget {
                   shaderCallback: (Rect bounds) {
                     return LinearGradient(
                       colors: [
-                        Colors.black.withOpacity(0.01),
-                        Colors.black.withOpacity(0.05),
+                        Colors.black.withValues(alpha: 0.01),
+                        Colors.black.withValues(alpha: 0.05),
                       ],
                     ).createShader(bounds);
                   },
@@ -56,7 +56,7 @@ class BackgroudBlur extends ConsumerWidget {
                   gradient: LinearGradient(
                     colors: [
                       Colors.transparent,
-                      Colors.black.withOpacity(0.05),
+                      Colors.black.withValues(alpha :0.05),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,

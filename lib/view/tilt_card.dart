@@ -1,4 +1,3 @@
-
 import 'dart:math';
 
 import 'package:flutter/foundation.dart';
@@ -6,6 +5,7 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:pokemon_card/view/pokemon_info_provider.dart';
 
 class TiltCard extends HookConsumerWidget {
   const TiltCard({super.key});
@@ -15,7 +15,7 @@ class TiltCard extends HookConsumerWidget {
     // tilt 상태를 useState로 관리
     final tiltX = useState(0.0);
     final tiltY = useState(0.0);
-    
+
     final animationController = useAnimationController(
       duration: const Duration(milliseconds: 300),
     );
@@ -27,7 +27,8 @@ class TiltCard extends HookConsumerWidget {
     );
 
     // Mouse move handler
-    final onMouseMove = useCallback((PointerHoverEvent event, BuildContext context) {
+    final onMouseMove =
+        useCallback((PointerHoverEvent event, BuildContext context) {
       final renderBox = context.findRenderObject() as RenderBox;
       final localPosition = renderBox.globalToLocal(event.position);
       final centerX = renderBox.size.width / 2;
@@ -140,7 +141,7 @@ class TiltCardContent extends StatelessWidget {
             width: 250,
             height: 400,
             decoration: BoxDecoration(
-              color: Colors.black.withOpacity(0.75),
+              color: Colors.black.withValues(alpha: 0.75),
               borderRadius: BorderRadius.circular(20),
               border: Border.all(
                 color: const Color(0xFFFFC83C),
@@ -161,29 +162,7 @@ class TiltCardContent extends StatelessWidget {
                 // 카드 텍스트 내용
                 const Padding(
                   padding: EdgeInsets.only(left: 16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      SizedBox(height: 10),
-                      Text(
-                        'Pikachu',
-                        style: TextStyle(
-                          fontFamily: 'Silkscreen',
-                          fontSize: 24,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Text(
-                        '65HP',
-                        style: TextStyle(
-                          fontFamily: 'Silkscreen',
-                          fontSize: 16,
-                          color: Color(0xFFFFC83C),
-                        ),
-                      ),
-                    ],
-                  ),
+                  child: PokemonInfoLabels(),
                 ),
                 // Glare 효과
                 Positioned.fill(
@@ -192,15 +171,15 @@ class TiltCardContent extends StatelessWidget {
                       borderRadius: BorderRadius.circular(10),
                       gradient: LinearGradient(
                         begin: Alignment(
-                          -0.5 - tiltY / 8,  // tilt에 따라 시작점 이동
+                          -0.5 - tiltY / 8, // tilt에 따라 시작점 이동
                           -0.5 + tiltX / 8,
                         ),
                         end: Alignment(
-                          0.5 - tiltY / 8,   // tilt에 따라 끝점 이동
+                          0.5 - tiltY / 8, // tilt에 따라 끝점 이동
                           0.5 + tiltX / 8,
                         ),
                         colors: [
-                          Colors.white.withOpacity(glareOpacity),
+                          Colors.white.withValues(alpha: glareOpacity),
                           Colors.transparent,
                           Colors.transparent,
                         ],
@@ -224,16 +203,7 @@ class TiltCardContent extends StatelessWidget {
                 ..rotateY(tiltY * (pi / 180))
                 ..translate(0.0, 0.0, -100.0),
               alignment: FractionalOffset.center,
-              child: const SizedBox(
-                width: 350,
-                height: 350,
-                child: Image(
-                  image: NetworkImage(
-                    'https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/other/official-artwork/1.png',
-                  ),
-                  fit: BoxFit.contain,
-                ),
-              ),
+              child: const PokemonImage(),
             ),
           ),
           // 추가 하이라이트 효과
@@ -252,7 +222,7 @@ class TiltCardContent extends StatelessWidget {
                   ),
                   colors: [
                     Colors.transparent,
-                    Colors.white.withOpacity(glareOpacity * 0.2),
+                    Colors.white.withValues(alpha: glareOpacity * 0.2),
                     Colors.transparent,
                   ],
                   stops: const [0.0, 0.5, 1.0],
@@ -262,6 +232,79 @@ class TiltCardContent extends StatelessWidget {
           ),
         ],
       ),
+    );
+  }
+}
+
+class PokemonImage extends ConsumerWidget {
+  const PokemonImage({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pokemonInfo = ref.watch(pokemonInfoProvider);
+
+    return pokemonInfo.when(
+      data: (pokemon) {
+        return  SizedBox(
+          width: 350,
+          height: 350,
+          child: Image(
+            image: NetworkImage(
+              pokemon.imageUrl,
+            ),
+            fit: BoxFit.contain,
+          ),
+        );
+      },
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
+      ),
+      error: (error, _) => Text('Error: $error'),
+    );
+  }
+}
+
+class PokemonInfoLabels extends ConsumerWidget {
+  const PokemonInfoLabels({
+    super.key,
+  });
+
+  @override
+  Widget build(BuildContext context, WidgetRef ref) {
+    final pokemonInfo = ref.watch(pokemonInfoProvider);
+
+    return pokemonInfo.when(
+      data: (pokemon) {
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            const SizedBox(height: 10),
+            Text(
+              pokemon.name,
+              style: const TextStyle(
+                fontFamily: 'Silkscreen',
+                fontSize: 24,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
+            ),
+            Text(
+              '${pokemon.hp}HP',
+              style: const TextStyle(
+                fontFamily: 'Silkscreen',
+                fontSize: 16,
+                color: Color(0xFFFFC83C),
+              ),
+            ),
+          ],
+        );
+      },
+      loading: () => const Center(
+        child: CircularProgressIndicator(),
+      ),
+      error: (error, _) => Text('Error: $error'),
     );
   }
 }
