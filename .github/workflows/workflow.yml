@@ -2,7 +2,7 @@ name: Flutter Web
 on:
   push:
     branches:
-      - master
+      - main
 jobs:
   build:
     name: Build And Deploy Github Pages
@@ -18,7 +18,7 @@ jobs:
       - run: flutter pub get
       - run: flutter build web --release
       - run: |
-          cd example/build/web
+          cd build/web
           git init
           git config --global user.email rlawjdxo1212@naver.com
           git config --global user.name origogi
