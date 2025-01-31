@@ -9,7 +9,7 @@ class PokemonRepository {
   static const int pokemonCount = 1025;
 
   Future<PokemonInfo> getRandomPokemon() async {
-    final id = 25;
+    final id = Random().nextInt(pokemonCount) + 1;
     
     try {
       final response = await http.get(Uri.parse('$baseUrl$id'));

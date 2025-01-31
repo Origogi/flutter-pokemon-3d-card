@@ -22,12 +22,12 @@ class BackgroudBlur extends ConsumerWidget {
               height: 800,
               child: ColorFiltered(
                 // saturation과 contrast 모두 증가
-colorFilter: const ColorFilter.matrix([
-  6.0, -1.5, -1.5, 0, 0,    // 더욱 극단적인 설정
-  -1.5, 6.0, -1.5, 0, 0,
-  -1.5, -1.5, 6.0, 0, 0,
-  0, 0, 0, 2.0, 0,
-]),
+                colorFilter: const ColorFilter.matrix([
+                  6.0, -1.5, -1.5, 0, 0, // 더욱 극단적인 설정
+                  -1.5, 6.0, -1.5, 0, 0,
+                  -1.5, -1.5, 6.0, 0, 0,
+                  0, 0, 0, 2.0, 0,
+                ]),
 
                 child: ShaderMask(
                   shaderCallback: (Rect bounds) {
@@ -57,7 +57,7 @@ colorFilter: const ColorFilter.matrix([
                   gradient: LinearGradient(
                     colors: [
                       Colors.transparent,
-                      Colors.black.withValues(alpha :0.04),
+                      Colors.black.withValues(alpha: 0.04),
                     ],
                     begin: Alignment.topCenter,
                     end: Alignment.bottomCenter,
