@@ -6,7 +6,7 @@ import 'package:pokemon_card/domain/pokemon_info.dart';
 
 class PokemonRepository {
   static const String baseUrl = 'https://pokeapi.co/api/v2/pokemon/';
-  static const int pokemonCount = 151;
+  static const int pokemonCount = 1000;
 
   Future<PokemonInfo> getRandomPokemon() async {
     final id = Random().nextInt(pokemonCount) + 1;
