@@ -5,8 +5,8 @@ Experience Pokémon's charm in a whole new dimension! This project brings a mode
 ## Sample
 
 |Web|iOS|Android|
-|------|---|-----|
-|![](./readme_asset/web.gif)|![](./readme_asset/iOS.gif)|![](./readme_asset/android.gif)|
+|:---:|:---:|:---:|
+|<img src="./readme_asset/web.gif" width="250"/>|<img src="./readme_asset/iOS.gif" width="250"/>|<img src="./readme_asset/android.gif" width="250"/>|
 
 ## API
 
