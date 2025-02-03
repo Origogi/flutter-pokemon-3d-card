@@ -8,20 +8,19 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pokemon_card/view/pokemon_info_provider.dart';
 import 'dart:html' if (dart.library.io) 'dart:io';
 
-
 class TiltCard extends HookConsumerWidget {
   const TiltCard({super.key});
 
-bool get isMobileWeb {  
-  // dart:html의 window.navigator.userAgent 사용
-  String userAgent = window.navigator.userAgent.toLowerCase();
-  
-  return userAgent.contains('mobile') ||
-         userAgent.contains('android') ||
-         userAgent.contains('iphone') ||
-         userAgent.contains('ipad') ||
-         userAgent.contains('ipod');
-}
+  bool get isMobileWeb {
+    // dart:html의 window.navigator.userAgent 사용
+    String userAgent = window.navigator.userAgent.toLowerCase();
+
+    return userAgent.contains('mobile') ||
+        userAgent.contains('android') ||
+        userAgent.contains('iphone') ||
+        userAgent.contains('ipad') ||
+        userAgent.contains('ipod');
+  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -47,14 +46,14 @@ bool get isMobileWeb {
       final centerX = renderBox.size.width / 2;
       final centerY = renderBox.size.height / 2;
 
-      tiltX.value = (-(localPosition.dy - centerY) / 20).clamp(-8.0, 8.0);
-      tiltY.value = (-(localPosition.dx - centerX) / 20).clamp(-8.0, 8.0);
+      tiltX.value = ((localPosition.dy - centerY) / 20).clamp(-8.0, 8.0);
+      tiltY.value = ((localPosition.dx - centerX) / 20).clamp(-8.0, 8.0);
     }, []);
 
     // Pointer move handler
     final onPointerMove = useCallback((Offset position) {
-      tiltX.value = (-(position.dy - 200) / 20).clamp(-8.0, 8.0);
-      tiltY.value = (-(position.dx - 125) / 20).clamp(-8.0, 8.0);
+      tiltX.value = ((position.dy - 200) / 20).clamp(-8.0, 8.0);
+      tiltY.value = ((position.dx - 125) / 20).clamp(-8.0, 8.0);
     }, []);
 
     // Reset handler
