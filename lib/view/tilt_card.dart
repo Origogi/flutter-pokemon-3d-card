@@ -47,13 +47,13 @@ class TiltCard extends HookConsumerWidget {
       final centerY = renderBox.size.height / 2;
 
       tiltX.value = ((localPosition.dy - centerY) / 20).clamp(-8.0, 8.0);
-      tiltY.value = ((localPosition.dx - centerX) / 20).clamp(-8.0, 8.0);
+      tiltY.value = (-(localPosition.dx - centerX) / 20).clamp(-8.0, 8.0);
     }, []);
 
     // Pointer move handler
     final onPointerMove = useCallback((Offset position) {
       tiltX.value = ((position.dy - 200) / 20).clamp(-8.0, 8.0);
-      tiltY.value = ((position.dx - 125) / 20).clamp(-8.0, 8.0);
+      tiltY.value = (-(position.dx - 125) / 20).clamp(-8.0, 8.0);
     }, []);
 
     // Reset handler
