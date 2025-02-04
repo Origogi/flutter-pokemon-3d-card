@@ -5,22 +5,12 @@ import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:pokemon_card/util/platform_checker.dart';
 import 'package:pokemon_card/view/pokemon_info_provider.dart';
-import 'dart:html' if (dart.library.io) 'dart:io';
+
 
 class TiltCard extends HookConsumerWidget {
   const TiltCard({super.key});
-
-  bool get isMobileWeb {
-    // dart:html의 window.navigator.userAgent 사용
-    String userAgent = window.navigator.userAgent.toLowerCase();
-
-    return userAgent.contains('mobile') ||
-        userAgent.contains('android') ||
-        userAgent.contains('iphone') ||
-        userAgent.contains('ipad') ||
-        userAgent.contains('ipod');
-  }
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -101,27 +91,26 @@ class TiltCard extends HookConsumerWidget {
     }, []);
 
     return Center(
-      child: (kIsWeb && !isMobileWeb)
-          ? MouseRegion(
-              onHover: (event) => onMouseMove(event, context),
-              onExit: (_) => resetTilt(),
-              child: TiltCardContent(
-                tiltX: tiltX.value,
-                tiltY: tiltY.value,
-                glareOpacity: glareOpacity,
-              ),
-            )
-          : GestureDetector(
-              onPanStart: (details) => onPointerMove(details.localPosition),
-              onPanUpdate: (details) => onPointerMove(details.localPosition),
-              onPanEnd: (_) => resetTilt(),
-              child: TiltCardContent(
-                tiltX: tiltX.value,
-                tiltY: tiltY.value,
-                glareOpacity: glareOpacity,
-              ),
-            ),
-    );
+        child: PlatformChecker.isMobile
+            ? GestureDetector(
+                onPanStart: (details) => onPointerMove(details.localPosition),
+                onPanUpdate: (details) => onPointerMove(details.localPosition),
+                onPanEnd: (_) => resetTilt(),
+                child: TiltCardContent(
+                  tiltX: tiltX.value,
+                  tiltY: tiltY.value,
+                  glareOpacity: glareOpacity,
+                ),
+              )
+            : MouseRegion(
+                onHover: (event) => onMouseMove(event, context),
+                onExit: (_) => resetTilt(),
+                child: TiltCardContent(
+                  tiltX: tiltX.value,
+                  tiltY: tiltY.value,
+                  glareOpacity: glareOpacity,
+                ),
+              ));
   }
 }
 
