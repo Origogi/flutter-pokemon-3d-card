@@ -1,13 +1,12 @@
 import 'dart:math';
 
-import 'package:flutter/foundation.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pokemon_card/util/platform_checker.dart';
 import 'package:pokemon_card/view/pokemon_info_provider.dart';
-
+import 'package:lottie/lottie.dart';
 
 class TiltCard extends HookConsumerWidget {
   const TiltCard({super.key});
@@ -260,7 +259,7 @@ class PokemonImage extends ConsumerWidget {
         );
       },
       loading: () => const Center(
-        child: CircularProgressIndicator(),
+        child: SizedBox.shrink(),
       ),
       error: (error, _) => Text('Error: $error'),
     );
@@ -302,8 +301,8 @@ class PokemonInfoLabels extends ConsumerWidget {
           ],
         );
       },
-      loading: () => const Center(
-        child: CircularProgressIndicator(),
+      loading: () => Center(
+        child: Lottie.asset("assets/lottie/loading.json", width: 150, height: 150),
       ),
       error: (error, _) => Text('Error: $error'),
     );

@@ -18,16 +18,16 @@ dependencies:
   hooks_riverpod: ^2.6.1
   flutter_hooks: ^0.20.5
   http: ^1.1.0
+  lottie: ^3.3.1
 dev_dependencies:
   flutter_test:
     sdk: flutter
 
   flutter_lints: ^2.0.0
 flutter:
+  assets:
+    - assets/lottie/loading.json
 
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
   fonts:
     - family: Silkscreen
