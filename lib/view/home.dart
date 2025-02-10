@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:pokemon_card/view/background_blur.dart';
+import 'package:pokemon_card/view/github_link.dart';
 import 'package:pokemon_card/view/random_button.dart';
 import 'package:pokemon_card/view/tilt_card.dart';
 
@@ -15,7 +17,7 @@ class Home extends StatelessWidget {
         colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
         useMaterial3: true,
       ),
-      home:  const Scaffold(
+      home: const Scaffold(
         backgroundColor: Colors.black,
         body: Stack(
           fit: StackFit.expand,
@@ -31,10 +33,16 @@ class Home extends StatelessWidget {
               // Align 위젯 사용
               alignment: Alignment.bottomCenter,
               child: Padding(
-                padding: EdgeInsets.only(bottom: 20),
-                child:  RandomButton()
-              ),
+                  padding: EdgeInsets.only(bottom: 20), child: RandomButton()),
             ),
+            if (kIsWeb)
+              Align(
+                // Align 위젯 사용
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                    padding: EdgeInsets.only(bottom: 36, right: 20),
+                    child: GithubLink()),
+              ),
           ],
         ),
       ),

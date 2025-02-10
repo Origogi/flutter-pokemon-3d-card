@@ -9,7 +9,7 @@ import 'package:pokemon_card/view/pokemon_info_provider.dart';
 import 'package:lottie/lottie.dart';
 
 class TiltCard extends HookConsumerWidget {
-  const TiltCard({super.key});
+      const TiltCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
