@@ -31,6 +31,10 @@ https://origogi.github.io/flutter-pokemon-3d-card/
 - Riverpod is a powerful and flexible library for state management and hooks.
 - Cache and manage the state of the application using Riverpod.
 
+## TODO
+
+- [ ] Adjust Gyro sensor 
+
 ## Reference
 
 https://codepen.io/andrewmillen/full/jOLELeo
