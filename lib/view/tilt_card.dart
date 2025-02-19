@@ -6,7 +6,6 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pokemon_card/util/platform_checker.dart';
 import 'package:pokemon_card/view/pokemon_info_provider.dart';
-import 'package:lottie/lottie.dart';
 
 class TiltCard extends HookConsumerWidget {
   const TiltCard({super.key});
