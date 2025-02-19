@@ -69,9 +69,7 @@ class BackgroudBlur extends ConsumerWidget {
         );
       },
       loading: () {
-        return const Center(
-          child: CircularProgressIndicator(),
-        );
+        return const SizedBox.shrink();
       },
       error: (error, stackTrace) {
         return const Center(
