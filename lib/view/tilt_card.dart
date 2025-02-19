@@ -9,7 +9,7 @@ import 'package:pokemon_card/view/pokemon_info_provider.dart';
 import 'package:lottie/lottie.dart';
 
 class TiltCard extends HookConsumerWidget {
-      const TiltCard({super.key});
+  const TiltCard({super.key});
 
   @override
   Widget build(BuildContext context, WidgetRef ref) {
@@ -302,7 +302,12 @@ class PokemonInfoLabels extends ConsumerWidget {
         );
       },
       loading: () => Center(
-        child: Lottie.asset("assets/lottie/loading.json", width: 150, height: 150),
+        child: Image.asset(
+          "assets/gif/loading.gif",
+          width: 150,
+          height: 150,
+          fit: BoxFit.contain,
+        ),
       ),
       error: (error, _) => Text('Error: $error'),
     );
