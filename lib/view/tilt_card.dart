@@ -1,4 +1,5 @@
 import 'dart:math';
+import 'dart:ui';
 
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
@@ -26,6 +27,9 @@ class TiltCard extends HookConsumerWidget {
       [tiltX.value, tiltY.value],
     );
 
+    // 보간 계수 (값이 클수록 목표값에 빠르게 도달)
+    const smoothing = 0.2;
+
     // Mouse move handler
     final onMouseMove =
         useCallback((PointerHoverEvent event, BuildContext context) {
@@ -34,14 +38,21 @@ class TiltCard extends HookConsumerWidget {
       final centerX = renderBox.size.width / 2;
       final centerY = renderBox.size.height / 2;
 
-      tiltX.value = ((localPosition.dy - centerY) / 20).clamp(-8.0, 8.0);
-      tiltY.value = (-(localPosition.dx - centerX) / 20).clamp(-8.0, 8.0);
+      final targetX = ((localPosition.dy - centerY) / 20).clamp(-8.0, 8.0);
+      final targetY = (-(localPosition.dx - centerX) / 20).clamp(-8.0, 8.0);
+
+      // 현재 상태와 목표 상태 사이를 보간하여 부드럽게 변화
+      tiltX.value = lerpDouble(tiltX.value, targetX, smoothing)!;
+      tiltY.value = lerpDouble(tiltY.value, targetY, smoothing)!;
     }, []);
 
     // Pointer move handler
     final onPointerMove = useCallback((Offset position) {
-      tiltX.value = ((position.dy - 200) / 20).clamp(-8.0, 8.0);
-      tiltY.value = (-(position.dx - 125) / 20).clamp(-8.0, 8.0);
+  final targetX = ((position.dy - 200) / 20).clamp(-8.0, 8.0);
+  final targetY = (-(position.dx - 125) / 20).clamp(-8.0, 8.0);
+
+  tiltX.value = lerpDouble(tiltX.value, targetX, smoothing)!;
+  tiltY.value = lerpDouble(tiltY.value, targetY, smoothing)!;
     }, []);
 
     // Reset handler
