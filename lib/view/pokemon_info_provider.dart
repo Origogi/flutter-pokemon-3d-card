@@ -2,26 +2,26 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:pokemon_card/data/pokemon_repository.dart';
 import 'package:pokemon_card/domain/pokemon_info.dart';
 
-class PokemonInfoNotifier extends StateNotifier<AsyncValue<PokemonInfo>> {
-  final PokemonRepository _repository;
+class PokemonInfoNotifier extends AsyncNotifier<PokemonInfo> {
+  @override
+  Future<PokemonInfo> build() async {
+    return await _fetchRandomPokemon();
+  }
 
-  PokemonInfoNotifier(this._repository) : super(const AsyncValue.loading()) {
-    fetchRandomPokemon();
+  Future<PokemonInfo> _fetchRandomPokemon() async {
+    final repository = ref.read(pokemonRepositoryProvider);
+    return await repository.getRandomPokemon();
   }
 
   Future<void> fetchRandomPokemon() async {
-    try {
-      state = const AsyncValue.loading();
-      final pokemon = await _repository.getRandomPokemon();
-      state = AsyncValue.data(pokemon);
-    } catch (error, stackTrace) {
-      state = AsyncValue.error(error, stackTrace);
-    }
+    state = const AsyncValue.loading();
+    state = await AsyncValue.guard(() async {
+      return await _fetchRandomPokemon();
+    });
   }
 }
 
 final pokemonInfoProvider =
-    StateNotifierProvider<PokemonInfoNotifier, AsyncValue<PokemonInfo>>((ref) {
-  final repository = ref.watch(pokemonRepositoryProvider);
-  return PokemonInfoNotifier(repository);
+    AsyncNotifierProvider<PokemonInfoNotifier, PokemonInfo>(() {
+  return PokemonInfoNotifier();
 });
