@@ -44,7 +44,7 @@ class TiltCard extends HookConsumerWidget {
       // 현재 상태와 목표 상태 사이를 보간하여 부드럽게 변화
       tiltX.value = lerpDouble(tiltX.value, targetX, smoothing)!;
       tiltY.value = lerpDouble(tiltY.value, targetY, smoothing)!;
-    }, []);
+    }, [tiltX, tiltY]);
 
     // Pointer move handler
     final onPointerMove = useCallback((Offset position) {
@@ -53,7 +53,7 @@ class TiltCard extends HookConsumerWidget {
 
   tiltX.value = lerpDouble(tiltX.value, targetX, smoothing)!;
   tiltY.value = lerpDouble(tiltY.value, targetY, smoothing)!;
-    }, []);
+    }, [tiltX, tiltY]);
 
     // Reset handler
     final resetTilt = useCallback(() async {
@@ -128,6 +128,10 @@ class TiltCardContent extends StatelessWidget {
   final double tiltY;
   final double glareOpacity;
 
+  // 성능 최적화: 상수 캐싱
+  static const double _degToRad = pi / 180;
+  static const double _perspective = 0.001;
+
   const TiltCardContent({
     super.key,
     required this.tiltX,
@@ -137,15 +141,20 @@ class TiltCardContent extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Transform(
-      transform: Matrix4.identity()
-        ..setEntry(3, 2, 0.001)
-        ..rotateX(tiltX * (pi / 180))
-        ..rotateY(tiltY * (pi / 180)),
-      alignment: FractionalOffset.center,
-      child: Stack(
-        clipBehavior: Clip.none,
-        children: [
+    // 성능 최적화: 계산 최소화
+    final radX = tiltX * _degToRad;
+    final radY = tiltY * _degToRad;
+
+    return RepaintBoundary(
+      child: Transform(
+        transform: Matrix4.identity()
+          ..setEntry(3, 2, _perspective)
+          ..rotateX(radX)
+          ..rotateY(radY),
+        alignment: FractionalOffset.center,
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: [
           // 카드 배경
           Container(
             width: 250,
@@ -206,14 +215,16 @@ class TiltCardContent extends StatelessWidget {
             bottom: -20,
             left: 0,
             right: 0,
-            child: Transform(
-              transform: Matrix4.identity()
-                ..setEntry(3, 2, 0.001)
-                ..rotateX(tiltX * (pi / 180))
-                ..rotateY(tiltY * (pi / 180))
-                ..setTranslationRaw(0.0, 0.0, -100.0),
-              alignment: FractionalOffset.center,
-              child: const PokemonImage(),
+            child: RepaintBoundary(
+              child: Transform(
+                transform: Matrix4.identity()
+                  ..setEntry(3, 2, _perspective)
+                  ..rotateX(radX)
+                  ..rotateY(radY)
+                  ..setTranslationRaw(0.0, 0.0, -100.0),
+                alignment: FractionalOffset.center,
+                child: const PokemonImage(),
+              ),
             ),
           ),
           // 추가 하이라이트 효과
@@ -241,6 +252,7 @@ class TiltCardContent extends StatelessWidget {
             ),
           ),
         ],
+        ),
       ),
     );
   }
@@ -260,11 +272,13 @@ class PokemonImage extends ConsumerWidget {
         return SizedBox(
           width: 350,
           height: 350,
-          child: Image(
-            image: NetworkImage(
-              pokemon.imageUrl,
-            ),
+          child: Image.network(
+            pokemon.imageUrl,
             fit: BoxFit.contain,
+            // 성능 최적화: 이미지 캐싱 강화
+            cacheWidth: 700,
+            cacheHeight: 700,
+            filterQuality: FilterQuality.medium,
           ),
         );
       },
