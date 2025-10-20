@@ -211,7 +211,7 @@ class TiltCardContent extends StatelessWidget {
                 ..setEntry(3, 2, 0.001)
                 ..rotateX(tiltX * (pi / 180))
                 ..rotateY(tiltY * (pi / 180))
-                ..translate(0.0, 0.0, -100.0),
+                ..setTranslationRaw(0.0, 0.0, -100.0),
               alignment: FractionalOffset.center,
               child: const PokemonImage(),
             ),

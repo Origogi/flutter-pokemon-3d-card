@@ -5,15 +5,15 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.0.0+1
 
 environment:
-  sdk: '>=3.2.0 <4.0.0'
+  sdk: '>=3.9.0 <4.0.0'
 
 dependencies:
   flutter:
     sdk: flutter
   cupertino_icons: ^1.0.2
-  hooks_riverpod: ^2.6.1
-  flutter_hooks: ^0.20.5
-  http: ^1.1.0
+  hooks_riverpod: ^3.0.3
+  flutter_hooks: ^0.21.3
+  http: ^1.1.2
   flutter_svg: ^2.0.17
   url_launcher: ^6.3.1
 
@@ -21,7 +21,7 @@ dev_dependencies:
   flutter_test:
     sdk: flutter
 
-  flutter_lints: ^2.0.0
+  flutter_lints: ^6.0.0
 flutter:
   assets:
     - assets/gif/
